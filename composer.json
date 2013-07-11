@@ -1,0 +1,21 @@
+{
+    "name": "gufron/assets-services",
+    "description":"Assets Service Provider",
+    "authors":[
+    	{
+    		"name":"Mochamad Gufron",
+    		"email":"mgufronefendi@gmail.com"
+    	}
+    ],
+    "require":{
+    	"silex/silex":"v1.1.0",
+    	"twig/twig":"*",
+        "symfony/twig-bridge": "~2.3",
+        "symfony/browser-kit": ">=2.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Gufy": "src"
+        }
+    }
+}
