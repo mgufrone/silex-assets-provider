@@ -1,4 +1,5 @@
 /vendor/
 /tests/
 app.php
+phpunit.xml.dist
 composer.lock
