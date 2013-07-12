@@ -1,6 +1,6 @@
 {
-    "name": "gufron/assets-services",
-    "description":"Assets Service Provider",
+    "name": "silex/assets-services",
+    "description":"Assets Manager Service Provider",
     "authors":[
     	{
     		"name":"Mochamad Gufron",
