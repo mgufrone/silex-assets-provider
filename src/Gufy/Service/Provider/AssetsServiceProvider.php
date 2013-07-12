@@ -36,6 +36,14 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	public function boot(Application $app)
 	{
 		$assets = $this;
+
+		// Registering preloaded options
+		$options = isset($app['assets.options'])?$app['assets.options']:array();
+		if(!empty($options))
+		array_walk($options, function($optionValue, $optionName) use($assets){
+			$assets->setOption($optionName, $optionValue);
+		});	
+
 		// Registering preloaded javascript files
 		$js = isset($app['assets.js'])?$app['assets.js']:array();
 		if(!empty($js))
@@ -49,13 +57,6 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		array_walk($css, function($value) use($assets){
 			$assets->registerCss($value);
 		});
-
-		// Registering preloaded options
-		$options = isset($app['assets.options'])?$app['assets.options']:array();
-		if(!empty($options))
-		array_walk($options, function($optionValue, $optionName) use($assets){
-			$assets->setOption($optionName, $optionValue);
-		});	
 
 		$app->after(function(Request $request, Response $response) use($app, $assets){
 			$content = $response->getContent();
@@ -100,8 +101,9 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	public function renderJs()
 	{
 		$result = "";
-		if(!empty($this->js))
-		array_walk($this->js, function($value) use (&$result){
+		$js = $this->getJs();
+		if(!empty($js))
+		array_walk($js, function($value) use (&$result){
 			$result .= '<script src="'.$value.'" type="text/javascript"></script>';
 		});
 		return $result;
@@ -114,8 +116,9 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	public function renderCss()
 	{
 		$result = "";
-		if(!empty($this->css))
-		array_walk($this->css, function($value) use (&$result){
+		$css = $this->getCss();
+		if(!empty($css))
+		array_walk($css, function($value) use (&$result){
 			$result .= '<link href="'.$value.'" type="text/css" rel="stylesheet">';
 		});
 		return $result;
