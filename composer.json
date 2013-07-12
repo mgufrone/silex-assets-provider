@@ -1,6 +1,7 @@
 {
     "name": "silex/assets-services",
     "description":"Assets Manager Service Provider",
+    "license":"GPLv3",
     "authors":[
     	{
     		"name":"Mochamad Gufron",
@@ -18,5 +19,6 @@
         "psr-0": {
             "Gufy": "src"
         }
-    }
+    },
+    "minimum-stability":"stable"
 }
