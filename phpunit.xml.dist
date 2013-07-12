@@ -21,8 +21,10 @@
     </php>
 
     <testsuites>
-        <testsuite name="Assets Service Provider Test Suite">
-            <directory>tests</directory>
+        <testsuite name="services">
+            <file>tests/AssetsServiceProviderTest.php</file>
+            <file>tests/AssetsMinifyTest.php</file>
+            <file>tests/AssetsWebTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

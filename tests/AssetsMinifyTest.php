@@ -21,8 +21,11 @@ class AssetsServiceProviderTest extends WebTestCase
 		$app = $this->app;
 		$this->assertClassHasAttribute('cached',get_class($app['assets']));
 		$this->assertTrue($app['assets']->isCombineEnabled());
+		
+		// $this->assertFileEquals($app['assets']->getCacheFile('js'), __DIR__.'/cache/compare.js');
+	}
+	public function testDependency()
+	{
 
-		$this->assertTrue(file_exists($app['assets']->getCacheFile('js')));
-		$this->assertFileEquals($app['assets']->getCacheFile('js'), __DIR__.'/cache/compare.js');
 	}
 }

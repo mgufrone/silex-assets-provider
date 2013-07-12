@@ -53,7 +53,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 			return $assets;
 		});
 	}
-	
+
 	// implementation of Silex Service Provider register method
 	public function boot(Application $app)
 	{
@@ -102,13 +102,6 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	{
 		$this->coreUrl = $url;
 		return $this;
-	}
-	public function setDefaultOptions(Application $app)
-	{
-
-		/*$request = $app['request'];
-		if(empty($options['baseUrl']))
-			$this->setOption('baseUrl',$request->getScheme().'://'.$request->getHttpHost().$request->getBasePath());*/
 	}
 	/**
 	* begin rendering assets when response is valid and has been processed.
