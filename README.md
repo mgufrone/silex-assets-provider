@@ -6,7 +6,17 @@ A simple and useful assets manager.
 
 Because Silex is using composer as its dependency manager, so does this Assets Manager. just provide this line on your composer.json
 
-	"require":{"silex/assets-service":"v1.1.2"}
+	{
+		...
+		"require":{
+			...
+			"silex/assets-service":"dev-master"
+			...
+		}
+		...
+	}
+
+Or refer to https://packagist.org/packages/silex/assets-services for more detailed available versions
 
 It is a simple and useful assets manager for silex. 
 All you need to do is simple, to register some files before anything else just register the service provider and provide
