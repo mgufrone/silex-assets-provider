@@ -20,8 +20,17 @@ When you register this provider, there are some configurations that you can prov
 	
 	<?php
 	array(
-		'baseUrl'=>'', // base url will prepend to all of the assets, i.e if you provide baseUrl with 'http://localhost' and you have javascript file 'js/app.js' then, it will output as http://localhost/js/app.js
+		'assets.options'=>array(
+			'baseUrl'=>'... your base url ...',// base url will prepend to all of the assets, i.e if you provide baseUrl with 'http://localhost' and you have javascript file 'js/app.js' then, it will output as http://localhost/js/app.js
+		), 
 	);
+
+Or if you prefer setting it up on the fly or in the specific response only, you can use this
+
+	<?php
+	$app['assets']->setOption('optionName','...value...');
+	// example
+	$app['assets']->setOption('baseUrl','http://localhost/hello-world/');
 
 
 ## Add single assets

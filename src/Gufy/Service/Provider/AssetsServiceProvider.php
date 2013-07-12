@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class AssetsServiceProvider implements ServiceProviderInterface
 {
+	private $options = array();
+
 	/**
 	* variable who take care of all registered javascripts files
 	* @var $js
@@ -47,6 +49,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		array_walk($css, function($value) use($assets){
 			$assets->registerCss($value);
 		});
+
+		// Registering preloaded options
+		$options = isset($app['assets.options'])?$app['assets.options']:array();
+		if(!empty($options))
+		array_walk($options, function($optionValue, $optionName) use($assets){
+			$assets->setOption($optionName, $optionValue);
+		});	
 
 		$app->after(function(Request $request, Response $response) use($app, $assets){
 			$content = $response->getContent();
@@ -118,7 +127,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	*/
 	public function getJs()
 	{
-		return $this->js;
+		$js = $this->js;
+		$options = $this->options;
+		array_walk($js, function(&$value) use($options){
+			if(!empty($options['baseUrl']))
+				$value = $options['baseUrl'].$value;
+		});
+		return $js;
 	}
 
 	/**
@@ -127,7 +142,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	*/
 	public function getCss()
 	{
-		return $this->css;
+		$css = $this->css;
+		$options = $this->options;
+		array_walk($css, function(&$value) use($options){
+			if(!empty($options['baseUrl']))
+				$value = $options['baseUrl'].$value;
+		});
+		return $css;
 	}
 
 	/**
@@ -170,6 +191,17 @@ class AssetsServiceProvider implements ServiceProviderInterface
 			$this->js = array();
 			$this->css = array();
 		}
+		return $this;
+	}
+
+	public function getOption($optionName)
+	{
+		return isset($this->options[$optionName])?$this->options[$optionName]:'';
+	}
+
+	public function setOption($optionName, $optionValue)
+	{
+		$this->options[$optionName] = $optionValue;
 		return $this;
 	}
 }
