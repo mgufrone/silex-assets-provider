@@ -7,7 +7,7 @@ some parameters within it. For example:
 	<?php
 
 	$app = new Applicaton;
-	$app->register(\Gufy\AssetsServiceProvider,array(
+	$app->register(new \Gufy\AssetsServiceProvider,array(
 		'assets.js'=>array("... list of javascripts files ..."),
 		'assets.css'=>array("... list of css files ..."),
 	));
