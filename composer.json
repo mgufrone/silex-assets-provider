@@ -8,10 +8,11 @@
     	}
     ],
     "require":{
-    	"silex/silex":"v1.1.0",
-    	"twig/twig":"*",
-        "symfony/twig-bridge": "~2.3",
-        "symfony/browser-kit": ">=2.3"
+    	"silex/silex":"v1.1.0"
+    },
+    "require-dev":{
+        "symfony/browser-kit": ">=2.3",
+        "symfony/css-selector": "v2.2.2"
     },
     "autoload": {
         "psr-0": {

@@ -15,22 +15,23 @@ use Symfony\Component\HttpFoundation\Request;
 
 class AssetsServiceProvider implements ServiceProviderInterface
 {
-	private $js=array();
+	public $js=array();
 
-	private $ccss=array();
+	public $css=array();
 
 	public function register(Application $app)
 	{
 		$assets = $this;
 		$app['assets'] = $app->share(function() use($app, $assets){
-			$assets->js = isset($app['assets.js'])?$app['assets.js']:array();
-			$assets->css = isset($app['assets.css'])?$app['assets.css']:array();
+			
 			return $assets;
 		});
 	}
 	public function boot(Application $app)
 	{
 		$assets = $this;
+		$assets->js = isset($app['assets.js'])?$app['assets.js']:array();
+		$assets->css = isset($app['assets.css'])?$app['assets.css']:array();
 		$app->after(function(Request $request, Response $response) use($app, $assets){
 			$content = $response->getContent();
 			$assets->renderAssets($content);
@@ -73,6 +74,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	public function renderCss()
 	{
 		$result = "";
+		if(!empty($this->css))
 		array_walk($this->css, function($value) use (&$result){
 			$result .= '<link href="'.$value.'" type="text/css" rel="stylesheet">';
 		});
