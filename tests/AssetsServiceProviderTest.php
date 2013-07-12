@@ -82,8 +82,15 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 
 		$app = $this->app;
 		$app['assets']->reset();
-		
+
 		$this->assertEquals(array(), $app['assets']->getJs());
 		$this->assertEquals(array(), $app['assets']->getCss());
+	}
+
+	public function testBaseUrl()
+	{
+		$app = $this->app;
+		$app['assets']->setOption('baseUrl', 'http://localhost/hello/');
+		$this->assertEquals(array('jquery.min.js'=>'http://localhost/hello/js/jquery.min.js'));
 	}
 }

@@ -14,6 +14,16 @@ some parameters within it. For example:
 
 	?>
 
+## Available Options
+
+When you register this provider, there are some configurations that you can provide on it. Here is the configuration options
+	
+	<?php
+	array(
+		'baseUrl'=>'', // base url will prepend to all of the assets, i.e if you provide baseUrl with 'http://localhost' and you have javascript file 'js/app.js' then, it will output as http://localhost/js/app.js
+	);
+
+
 ## Add single assets
 
 If you want to add files on the controller or specific response only, you can do like this. 
@@ -51,3 +61,4 @@ Or if you wanna reset the whole assets, it's simple use this.
 ## Contribution
 
 If you want to contribute on this repo, just fork this repo or give me some feedback from the issue feature.
+
