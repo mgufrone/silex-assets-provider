@@ -52,10 +52,10 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expectCss, $app['assets']->getCss());
 
 		// test rendered css 
-		$expectedRenderedJs = '<script src="js/jquery.min.js" type="text/javascript"></script>';
+		$expectedRenderedJs = '<script src="'.$host.'js/jquery.min.js" type="text/javascript"></script>';
 		$this->assertEquals($expectedRenderedJs, $app['assets']->renderJs());
 		// test rendered css
-		$expectedRenderedCss = '<link href="css/app.css" type="text/css" rel="stylesheet">';
+		$expectedRenderedCss = '<link href="'.$host.'css/app.css" type="text/css" rel="stylesheet">';
 		$this->assertEquals($expectedRenderedCss, $app['assets']->renderCss());
 		$content = "";
 		$this->assertTrue(!empty($app['assets']->renderAssets($content)));

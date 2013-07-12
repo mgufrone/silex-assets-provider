@@ -8,7 +8,8 @@ use \Gufy\Service\Provider\AssetsServiceProvider;
 $app = new Application;
 
 $expectJs = array(
-	'js/jquery.min.js'
+	'js/jquery.min.js',
+	'js/jquery.ui.min.js'
 );
 $expectCss = array(
 	'css/app.css'
@@ -16,9 +17,16 @@ $expectCss = array(
 $app->register(new AssetsServiceProvider, array(
 	'assets.js'=>$expectJs,
 	'assets.css'=>$expectCss,
+	'assets.options'=>array(
+		'baseUrl'=>'http://localhost/my-apps/',
+		'basePath'=>__DIR__.'/assets/',
+		'cachePath'=>__DIR__.'/cache/',
+		'scriptPath'=>__DIR__,
+		'cacheFileName'=>'cached',
+		'combine'=>true,
+	),
 ));
-$app->get('/',function(Request $request) use ($app){
-	return "Hello World";
+$app->get('/',function() use ($app){
+	return "";
 });
-$app->run();
 return $app;

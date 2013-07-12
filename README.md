@@ -1,5 +1,13 @@
 # Silex Assets Manager
 
+A simple and useful assets manager. 
+
+# Installation
+
+Because Silex is using composer as its dependency manager, so does this Assets Manager. just provide this line on your composer.json
+
+	"require":{"silex/assets-service":"v1.1.2"}
+
 It is a simple and useful assets manager for silex. 
 All you need to do is simple, to register some files before anything else just register the service provider and provide
 some parameters within it. For example:
@@ -22,6 +30,13 @@ When you register this provider, there are some configurations that you can prov
 	array(
 		'assets.options'=>array(
 			'baseUrl'=>'... your base url ...',// base url will prepend to all of the assets, i.e if you provide baseUrl with 'http://localhost' and you have javascript file 'js/app.js' then, it will output as http://localhost/js/app.js
+			// if you consider about combine and compress your assets, please provide this.
+			'combine'=>true, // set assets manager in combine mode
+			'basePath'=>'', // base directory path of your assets
+			'scriptPath'=>'', // set this variable with directory root of your webapp
+			'cachePath'=>'', // directory who handle your cached assets files
+			'cacheFileName'=>'', // custom file name of the cache file, leave blank or remove it and it will generated random string
+
 		), 
 	);
 
