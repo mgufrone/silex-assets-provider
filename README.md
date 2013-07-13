@@ -16,7 +16,7 @@ Because Silex is using composer as its dependency manager, so does this Assets M
 		...
 	}
 
-Or refer to https://packagist.org/packages/silex/assets-services for more detailed available versions
+Or refer to https://packagist.org/packages/gufy/assets-services for more detailed available versions
 
 It is a simple and useful assets manager for silex. 
 All you need to do is simple, to register some files before anything else just register the service provider and provide
