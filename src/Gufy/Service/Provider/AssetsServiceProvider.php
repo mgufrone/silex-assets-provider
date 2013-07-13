@@ -59,8 +59,9 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	{
 		$assets = $this;
 		$app->before(function(Request $request) use($app, $assets){
-			$baseUrl = rtrim($request->getScheme().'://'.$request->getHttpHost().(empty($request->getBasePath())?'/':$request->getBasePath()),'/');
+			$baseUrl = rtrim($request->getScheme().'://'.$request->getHttpHost().$request->getBasePath()).'/';
 			$assets->setCoreUrl($baseUrl);
+			$assets->setOption('baseUrl', $baseUrl);
 			return $assets;
 		});
 
@@ -116,7 +117,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		if(!empty($css))
 		{
 			if(strpos($content, "</head>")>0)
-				$content = str_replace("</head>","####replace-css-here####</body>",$content);
+				$content = str_replace("</head>","####replace-css-here####</head>",$content);
 			else
 				$content = "####replace-css-here####".$content;
 			$content = str_replace("####replace-css-here####",$css,$content);

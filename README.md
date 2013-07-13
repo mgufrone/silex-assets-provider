@@ -25,7 +25,7 @@ some parameters within it. For example:
 	<?php
 
 	$app = new Applicaton;
-	$app->register(new \Gufy\AssetsServiceProvider,array(
+	$app->register(new \Gufy\Service\Provider\AssetsServiceProvider,array(
 		'assets.js'=>array("... list of javascripts files ..."),
 		'assets.css'=>array("... list of css files ..."),
 	));
