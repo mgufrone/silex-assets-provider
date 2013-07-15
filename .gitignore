@@ -2,3 +2,4 @@
 composer.lock
 /app.php
 libpeerconnection.log
+/nbproject/private/

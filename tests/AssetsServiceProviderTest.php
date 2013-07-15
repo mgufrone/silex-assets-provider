@@ -38,6 +38,7 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 	{
 		$app = $this->app;
 		$host = 'http://localhost/my-apps/';
+                $app['assets']->setOption('baseUrl',$host);
 		$expectJs = array(
 			'jquery.min.js'=>$host.'js/jquery.min.js'
 		);
@@ -64,6 +65,7 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 	{
 		$app = $this->app;
 		$host = 'http://localhost/my-apps/';
+                $app['assets']->setOption('baseUrl',$host);
 		$app['assets']->registerJs('js/jquery.ui.js');
 		$this->assertEquals(array('jquery.min.js'=>$host.'js/jquery.min.js','jquery.ui.js'=>$host.'js/jquery.ui.js'),$app['assets']->getJs());
 
@@ -95,6 +97,7 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 	{
 		$app = $this->app;
 		$host = 'http://localhost/my-apps/';
+                $app['assets']->setOption('baseUrl',$host);
 		$this->assertEquals($host,$app['assets']->getOption('baseUrl'));
 		$this->assertEquals(array('jquery.min.js'=>$host.'js/jquery.min.js'),$app['assets']->getJs());
 		$this->assertEquals(array('app.css'=>$host.'css/app.css'),$app['assets']->getCss());	
@@ -108,4 +111,42 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(array('jquery.min.js'=>'http://localhost/hello/js/jquery.min.js'),$app['assets']->getJs());
 		$this->assertEquals(array('app.css'=>'http://localhost/hello/css/app.css'),$app['assets']->getCss());
 	}
+    public function testPositioning()
+    {
+        $app = $this->app;
+        $host = 'http://localhost/hello/';
+//            Js default positioning
+        $app['assets']->setOption('baseUrl',$host);
+        $newJs = $host.'js/monster.js';
+        $app['assets']->registerJs('js/monster.js');
+        $this->assertEquals('http://localhost/hello/',$app['assets']->getOption('baseUrl'));
+        $this->assertTrue(in_array($newJs, $app['assets']->getJs()));
+        
+//            Js Positioning
+        $js = 'js/app.js';
+        $app['assets']->registerJs($js, $app['assets']::ON_BODY);
+        $this->assertTrue(in_array($host.$js,$app['assets']->getJs($app['assets']::ON_BODY)));
+    }
+    public function testCustomScriptsAndCss()
+    {
+
+        $app = $this->app;
+        $host = 'http://localhost/hello/';
+        // Javascript additional/custom script testing
+        $app['assets']->setOption('baseUrl',$host);
+        $customJs = 'var hello="monster";';
+        $app['assets']->customJs("hello-world", $customJs);
+        $this->assertEquals('http://localhost/hello/',$app['assets']->getOption('baseUrl'));
+        $this->assertTrue(in_array($customJs, $app['assets']->getCustomJs()));
+        
+        $customJs = 'var hello="hai";';
+        $app['assets']->customJs("hello-world", $customJs, $app['assets']::ON_BODY);
+        $this->assertTrue(in_array($customJs, $app['assets']->getCustomJs($app['assets']::ON_BODY)));
+
+
+        // CSS additional/custom script testing
+        $customCss = "body{background:#fefefe;}";
+        $app['assets']->customCss("hello-css",$customCss);
+        $this->assertTrue(in_array($customCss,$app['assets']->getCustomCss()));
+    }
 }

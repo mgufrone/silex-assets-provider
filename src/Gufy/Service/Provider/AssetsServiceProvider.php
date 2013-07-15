@@ -15,6 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 class AssetsServiceProvider implements ServiceProviderInterface
 {
 	/**
+	* for javascript positioning, whether it will be placed before </head> tag or </body> tag
+	* it is useful when you consider about performance load.
+	* @var int ON_HEAD position marker of javascript placement before </head>
+	*/
+	const ON_HEAD=1;
+
+	/**
+	* Position marker of javascript placement before </body>
+	* @var int ON_HEAD position marker of javascript placement before </head>
+	*/
+	const ON_BODY=2;
+	/**
 	* All additional options will be registered here
 	* @var array $options
 	*/
@@ -31,12 +43,23 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* @var $js
 	*/
 	public $js=array();
-
 	/**
-	* variable who take care of all registered stylesheets files
+	* All custom javascript contents will be added here. 
+	* It need position and identifier to make a unique script, and you can replace the script by its id
+	* @var array $customJs
+	*/
+	public $customJs=array();
+	/**
+	* variable who take care of all registered stylesheets files. 
 	* @var array $css
 	*/
 	public $css=array();
+
+	/**
+	* All custom css contents will be added here.
+	* @var array $customJs
+	*/
+	public $customCss=array();
 
 	/**
 	* variable who take care of all registered cached files by its type
@@ -114,6 +137,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	{
 		$js = $this->renderJs();
 		$css = $this->renderCss();
+		$bodyJs = $this->renderJs(self::ON_BODY);
 		if(!empty($css))
 		{
 			if(strpos($content, "</head>")>0)
@@ -124,12 +148,22 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		}
 		if(!empty($js))
 		{
-			if(strpos($content, "</body>")>0)
-				$content = str_replace("</body>","####replace-js-here####</body>",$content);
+			if(strpos($content, "</head>")>0)
+				$content = str_replace("</head>","####replace-js-here####</head>",$content);
 			else
 				$content .= "####replace-js-here####";
 			$content = str_replace("####replace-js-here####",$js,$content);
 		}
+                
+		if(!empty($bodyJs))
+		{
+			if(strpos($content, "</body>")>0)
+				$content = str_replace("</body>","####replace-js-here####</body>",$content);
+			else
+				$content .= "####replace-js-here####";
+			$content = str_replace("####replace-js-here####",$bodyJs,$content);
+		}
+                
 		return $content;
 	}
 
@@ -137,14 +171,25 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* Begin processing registering Javascripts if available
 	* @return String $result if app has javascript files, all registered javascripts will be converted as readable html script
 	*/
-	public function renderJs()
+	public function renderJs($position=self::ON_HEAD)
 	{
 		$result = "";
-		$js = $this->getJs();
+		$js = $this->getJs($position);
 		if(!empty($js))
 		array_walk($js, function($value) use (&$result){
 			$result .= '<script src="'.$value.'" type="text/javascript"></script>';
 		});
+		$custom = $this->getCustomJs($position);
+		if(!empty($custom))
+		{
+			$customJs = '<script type="text/javascript" id="silex-assets-service-js-'.substr(md5(time()),0,5).'">';
+			if($custom !== array())
+				array_walk($custom, function($value) use (&$customJs){
+					$customJs .= $value."\n";
+				});
+			$customJs .= "</script>";
+			$result .= $customJs;
+		}
 		return $result;
 	}
 
@@ -160,6 +205,17 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		array_walk($css, function($value) use (&$result){
 			$result .= '<link href="'.$value.'" type="text/css" rel="stylesheet">';
 		});
+		$custom = $this->getCustomCss();
+		if(!empty($custom))
+		{
+			$customCss = '<style type="text/css" rel="stylesheet" id="silex-assets-service-css-'.substr(md5(time()),0,5).'">';
+			if($custom !== array())
+				array_walk($custom, function($value) use (&$customCss){
+					$customCss .= $value."\n";
+				});
+			$customCss .= "</style>";
+			$result .= $customCss;
+		}
 		return $result;
 	}
 
@@ -167,9 +223,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* Get all registered javascripts
 	* @return array $this->js all available javascripts
 	*/
-	public function getJs()
+	public function getJs($position=self::ON_HEAD)
 	{
-		$js = $this->js;
+		if($this->js===array())
+			return array();
+		$js = isset($this->js[$position])&&!empty($this->js[$position])?$this->js[$position]:array();
+		if($js===array())
+			return $js;
 		$options = $this->options;
 		if($this->isCombineEnabled())
 			$this->combine('js', $js);
@@ -209,11 +269,36 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* @param string $filePath register a single js file to assets manager
 	* @return AssetsServiceProvider this is useful to make a method-chaining 
 	*/
-	public function registerJs($filePath="")
+	public function registerJs($filePath="",$position=self::ON_HEAD)
 	{
 		if(!empty($filePath))
-		$this->js[basename($filePath)] = $filePath;
+		$this->js[$position][basename($filePath)] = $filePath;
 		return $this;
+	}
+
+	/**
+	* Add custom script on your apps. It is useful when you want to attach some custom script on the fly.
+	* @param string $id identity name of the script
+	* @param string $script script you want to attach
+	* @param int $position position where you want to place you script. it must be @link(ON_BODY) or @link(ON_HEAD)
+	* @return AssetsServiceProvider so you can use it as method-chaining mode
+	*/
+	public function customJs($id, $script="", $position=self::ON_HEAD)
+	{
+		if(!isset($this->customJs[$position]))
+			$this->customJs[$position] = array();
+		$this->customJs[$position][$id] = $script;
+		return $this;
+	}
+
+	/**
+	* It is used to get custom javascript by reserved position. 
+	* @param int $position position where you want to place you script. it must be @link(ON_BODY) or @link(ON_HEAD)
+	* @return array if $position on $customJs is available it will return as is, if not it just return an empty array
+	*/
+	public function getCustomJs($position=self::ON_HEAD)
+	{
+		return isset($this->customJs[$position])?$this->customJs[$position]:array();
 	}
 
 	/**
@@ -226,6 +311,32 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		if(!empty($filePath))
 		$this->css[basename($filePath)] = $filePath;
 		return $this;
+	}
+
+	/**
+	* Register custom style on your apps. It is useful when you want to attach some custom style on the fly.
+	* @param string $id identity name of the style
+	* @param string $css style you want to attach
+	* @return AssetsServiceProvider so you can use it as method-chaining mode
+	*/
+	public function customCss($id, $css="")
+	{
+		if(func_num_args()==1)
+		{
+			$css = $id;
+			$id = uniqid();
+		}
+		$this->customCss[$id] = $css;
+		return $this;
+	}
+
+	/**
+	* It is used to get all registered custom styles
+	* @return array $this->customCss 
+	*/
+	public function getCustomCss()
+	{
+		return $this->customCss;
 	}
 
 	/**
