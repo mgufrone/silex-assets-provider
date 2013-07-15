@@ -10,7 +10,7 @@ Because Silex is using composer as its dependency manager, so does this Assets M
 		...
 		"require":{
 			...
-			"silex/assets-service":"dev-master"
+			"gufy/assets-service":"dev-master"
 			...
 		}
 		...
@@ -70,6 +70,21 @@ If you want to add files on the controller or specific response only, you can do
 
 		// for css file		
 		$app['assets']->registerCss('... your file name ...');
+		return "something";
+	});
+
+## Add custom Style or Javascript on the fly
+
+If you want to add custom style or javascript on the fly, use this. 
+	
+	<?php
+	$app->get('/',function(Request $request) use($app){
+
+		// for javascript file
+		$app['assets']->customJs('... $id ..','... $scripts ...');
+
+		// for css file		
+		$app['assets']->customCss('... $styles ...');
 		return "something";
 	});
 
