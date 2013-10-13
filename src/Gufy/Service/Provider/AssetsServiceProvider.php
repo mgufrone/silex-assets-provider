@@ -110,9 +110,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 			});
 
 		$app->after(function(Request $request, Response $response) use($app, $assets){
-			$content = $response->getContent();
-			$assets->renderAssets($content);
-			$response->setContent($content);
+			// print_r($response->headers->get('content_type'));
+			if($response->headers->get('content_type')!='application/json')
+			{
+				$content = $response->getContent();
+				$assets->renderAssets($content);
+				$response->setContent($content);
+			}
 			return $response;
 		});
 	}
