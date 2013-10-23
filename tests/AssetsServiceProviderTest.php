@@ -59,7 +59,8 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
 		$expectedRenderedCss = '<link href="'.$host.'css/app.css" type="text/css" rel="stylesheet">';
 		$this->assertEquals($expectedRenderedCss, $app['assets']->renderCss());
 		$content = "";
-		$this->assertTrue(!empty($app['assets']->renderAssets($content)));
+		$result = $app['assets']->renderAssets($content);
+		$this->assertTrue(!empty($result));
 	}
 	public function testAddFile()
 	{
