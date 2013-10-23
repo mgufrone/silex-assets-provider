@@ -4,7 +4,7 @@ namespace Gufy\tests;
 use \Silex\Application;
 use \Gufy\Service\Provider\AssetsServiceProvider;
 use \Silex\WebTestCase;
-class AssetsServiceProviderTest extends WebTestCase
+class AssetsWebTest extends WebTestCase
 {
 	public function createApplication()
 	{
