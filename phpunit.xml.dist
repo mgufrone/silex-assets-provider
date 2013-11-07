@@ -11,20 +11,15 @@
          verbose="false"
          bootstrap="vendor/autoload.php"
 >
-    <logging>
-      <log type="coverage-html" target="tests/phpunit_report/report" charset="UTF-8"
-           yui="true" highlight="false"
-           lowUpperBound="35" highLowerBound="70"/>
-    </logging>
     <php>
       <ini name="display_errors" value="on"/>
     </php>
 
     <testsuites>
         <testsuite name="services">
-            <file>tests/AssetsServiceProviderTest.php</file>
-            <file>tests/AssetsMinifyTest.php</file>
-            <file>tests/AssetsWebTest.php</file>
+            <file>tests/unit/AssetsServiceProviderTest.php</file>
+            <file>tests/unit/AssetsMinifyTest.php</file>
+            <file>tests/unit/AssetsWebTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

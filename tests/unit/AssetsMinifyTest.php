@@ -10,7 +10,7 @@ class AssetsMinifyProviderTest extends WebTestCase
 	public function createApplication()
 	{
 
-		$app = include __DIR__.'/app.php';
+		$app = include __DIR__.'/../app.php';
 		return $app;
 	}
 	public function testMinify()

@@ -77,7 +77,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		});
 	}
 
-	// implementation of Silex Service Provider register method
+	// implementation of Silex Service Provider boot method
 	public function boot(Application $app)
 	{
 		$assets = $this;

@@ -8,7 +8,7 @@ class AssetsWebTest extends WebTestCase
 {
 	public function createApplication()
 	{
-		$app = require(__DIR__.'/app.php');
+		$app = require(__DIR__.'/../app.php');
 		// $app['assets.options']['combine'] =false;
 		$app['debug'] = true;
 		$app['exception_handler']->disable();
