@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mgufrone/silex-assets-provider.png?branch=master)](https://travis-ci.org/mgufrone/silex-assets-provider)
+
 # Silex Assets Manager
 
 A simple and useful assets manager. 
