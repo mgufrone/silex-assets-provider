@@ -152,8 +152,8 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		}
 		if(!empty($js))
 		{
-			if(strpos($content, "</head>")>0)
-				$content = str_replace("</head>","####replace-js-here####</head>",$content);
+			if(strpos($content, "</body>")>0)
+				$content = str_replace("</body>","####replace-js-here####</body>",$content);
 			else
 				$content .= "####replace-js-here####";
 			$content = str_replace("####replace-js-here####",$js,$content);
