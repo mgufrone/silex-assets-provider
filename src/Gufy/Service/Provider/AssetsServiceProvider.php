@@ -570,7 +570,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 		$lib = $this;
 		$attached_groups = $this->getAttachedGroups();
 		array_walk($lib->attached_groups, function($group_name) use($lib){
-			$groups = $this->getGroups();
+			$groups = $lib->getGroups();
 			$group_contents = $groups[$group_name];
 			array_walk($group_contents, function($value, $key) use($lib, $group_name){
 				switch($key)
