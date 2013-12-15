@@ -67,8 +67,17 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	*/
 	public $cached=array();
 
-	private $groups=array();
-	private $attached_groups=array();
+	/**
+	* variable who take care of all registered asset's group packages
+	* @var array $groups
+	*/
+	protected $groups=array();
+
+	/**
+	* variable who take care of all attached packages
+	* @var array $attached_groups
+	*/
+	protected $attached_groups=array();
 
 	// implementation of Silex Service Provider register method
 	public function register(Application $app)
