@@ -71,13 +71,13 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* variable who take care of all registered asset's group packages
 	* @var array $groups
 	*/
-	protected $groups=array();
+	private $groups=array();
 
 	/**
 	* variable who take care of all attached packages
 	* @var array $attached_groups
 	*/
-	protected $attached_groups=array();
+	private $attached_groups=array();
 
 	// implementation of Silex Service Provider register method
 	public function register(Application $app)
@@ -544,14 +544,34 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	}
 
 	/**
+	* since groups is protected by its private modifier so there is a function to access on it
+	* @return return registered groups
+	*/
+	public function getGroups()
+	{
+		return $this->groups;
+	}
+
+	/**
+	* since groups is protected by its private modifier so there is a function to access on it
+	* @return return attached groups
+	*/
+	public function getAttachedGroups()
+	{
+		return $this->attached_groups;
+	}
+
+	/**
 	* preparing auto attached groups before registering any asset files
 	* @return self object
 	*/
 	private function prepareAssets()
 	{
 		$lib = $this;
+		$attached_groups = $this->getAttachedGroups();
 		array_walk($lib->attached_groups, function($group_name) use($lib){
-			$group_contents = $lib->groups[$group_name];
+			$groups = $this->getGroups();
+			$group_contents = $groups[$group_name];
 			array_walk($group_contents, function($value, $key) use($lib, $group_name){
 				switch($key)
 				{
