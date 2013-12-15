@@ -150,4 +150,30 @@ class AssetsServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app['assets']->customCss("hello-css",$customCss);
         $this->assertTrue(in_array($customCss,$app['assets']->getCustomCss()));
     }
+
+    // group testing
+    public function testAttachAndDetachPackage()
+    {
+    	$app = $this->app;
+        $host = 'http://localhost/hello/';
+        $app['assets']->reset();
+        $app['assets']->setOption('baseUrl',$host);
+    	$app['assets']->attach('tester',array(
+    		'js'=>array('test.js','hello.js'),
+    		'css'=>array('test.css','hello.css'),
+    		'baseUrl'=>$host,
+    	),true);
+    	// $app['assets']->registerPackage('tester');
+    	$expectedJs = array('tester:test.js'=>$host.'tester/test.js','tester:hello.js'=>$host.'tester/hello.js');
+    	$expectedCss = array('tester:test.css'=>$host.'tester/test.css','tester:hello.css'=>$host.'tester/hello.css');
+    	$content = '';
+    	$app['assets']->renderAssets($content);
+        $this->assertEquals($expectedJs, $app['assets']->getJs($app['assets']->getOption('jsPosition')));
+        $this->assertEquals($expectedCss, $app['assets']->getCss());
+
+        $app['assets']->detach('tester');
+
+        $this->assertEquals(array(), $app['assets']->getJs($app['assets']->getOption('jsPosition')));
+        $this->assertEquals(array(), $app['assets']->getCss());
+    }
 }

@@ -67,6 +67,9 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	*/
 	public $cached=array();
 
+	private $groups=array();
+	private $attached_groups=array();
+
 	// implementation of Silex Service Provider register method
 	public function register(Application $app)
 	{
@@ -85,6 +88,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 			$baseUrl = rtrim($request->getScheme().'://'.$request->getHttpHost().$request->getBasePath()).'/';
 			$assets->setCoreUrl($baseUrl);
 			$assets->setOption('baseUrl', $baseUrl);
+			$assets->setOption('jsPosition',$assets::ON_BODY);
 			return $assets;
 		});
 
@@ -139,6 +143,7 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	*/
 	public function renderAssets(&$content)
 	{
+		$this->prepareAssets();
 		$js = $this->renderJs();
 		$css = $this->renderCss();
 		$bodyJs = $this->renderJs(self::ON_BODY);
@@ -273,10 +278,16 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* @param string $filePath register a single js file to assets manager
 	* @return AssetsServiceProvider this is useful to make a method-chaining 
 	*/
-	public function registerJs($filePath="",$position=self::ON_HEAD)
+	public function registerJs($filePath="",$position=self::ON_HEAD, $package_name='')
 	{
 		if(!empty($filePath))
-		$this->js[$position][basename($filePath)] = $filePath;
+		{
+			if(!empty($package_name))
+				$package_name.=':';
+
+			$this->js[$position][$package_name.basename($filePath)] = $filePath;
+		}
+		// print_r($this->js);
 		return $this;
 	}
 
@@ -310,10 +321,14 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* @param string $filePath register a single css file to assets manager
 	* @return AssetsServiceProvider this is useful to make a method-chaining 
 	*/
-	public function registerCss($filePath="")
+	public function registerCss($filePath="",$package_name='')
 	{
 		if(!empty($filePath))
-		$this->css[basename($filePath)] = $filePath;
+		{
+			if(!empty($package_name))
+				$package_name .= ':';
+			$this->css[$package_name.basename($filePath)] = $filePath;
+		}
 		return $this;
 	}
 
@@ -348,11 +363,49 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	* @param string $type provide type if you want to reset specific asset type, or leave blank if you reset the whole assets
 	* @return AssetsServiceProvider this is useful to make a method-chaining 
 	*/
-	public function reset($type='')
+	public function reset($type='',$group_name='')
 	{
 		if(!empty($type))
 		{
-			$this->$type = array();
+			if(!empty($group_name))
+			{
+				$lib = $this;
+				if(!empty($this->$type))
+				array_walk($this->$type, function($values, $key0) use($group_name, $type, $lib){
+					// print_r($values);
+					// print $type;
+					if($type == 'js')
+					{
+						// print_r($values);
+
+						array_walk($values, function($value, $key1) use($group_name, $key0, $type, $lib){
+							$keys = explode(':',$key1);
+							$registered = $keys[0];
+							if(!empty($registered) && $registered == $group_name)
+							{
+								$cache = $lib->$type;
+								unset($cache[$key0][$key1]);
+								$lib->$type = $cache;
+								// unset($lib->$type[$key0][$key1]);
+							}
+						});
+					}
+					else
+					{
+						$keys = explode(':',$key0);
+						$registered = $keys[0];
+						if(!empty($registered) && $registered == $group_name)
+						{
+							$cache = $lib->$type;
+							unset($cache[$key0]);
+							$lib->$type = $cache;
+							// unset($lib->$type[$key0]);
+						}
+					}
+				});
+			}
+			else
+				$this->$type = array();
 		}
 		else
 		{
@@ -441,5 +494,71 @@ class AssetsServiceProvider implements ServiceProviderInterface
 	private function createCachePath($cacheFileName)
 	{
 		return $this->getOption('cachePath').$cacheFileName;
+	}
+
+	/**
+	* @param string $group_name group name that will be registered
+	* @param array $group_contents array of contents as a registered package contents
+	* @param boolean $auto_attach auto registered to assest if set to true
+	* @return self object
+	*/
+	public function attach($group_name, $group_contents, $auto_attach=false)
+	{
+		$lib = $this;
+		$count_args = func_num_args();
+		if($count_args==1)
+			$this->attached_groups[] = $group_name;
+		else
+		{
+			$this->groups[$group_name] = $group_contents;
+			if($auto_attach)
+				$this->attached_groups[] = $group_name;
+		}
+			
+		return $this;
+	}
+
+	/**
+	* @param string $group_name group name that will be detached from registered asset groups
+	* @return self object
+	*/
+	public function detach($group_name)
+	{
+
+		if(isset($this->attached_groups[$group_name]))
+			unset($this->attached_groups[$group_name]);
+		if(isset($this->groups[$group_name]))
+			unset($this->groups[$group_name]);
+		$this->reset('js',$group_name);
+		$this->reset('css',$group_name);
+		return $this;
+	}
+
+	/**
+	* preparing auto attached groups before registering any asset files
+	* @return self object
+	*/
+	private function prepareAssets()
+	{
+		$lib = $this;
+		array_walk($lib->attached_groups, function($group_name) use($lib){
+			$group_contents = $lib->groups[$group_name];
+			array_walk($group_contents, function($value, $key) use($lib, $group_name){
+				switch($key)
+				{
+					case 'css':
+					array_walk($value, function($value, $key) use($lib, $group_name){
+						$lib->registerCss($group_name.'/'.$value,$group_name);
+					});
+					break;
+					case 'js':
+					array_walk($value, function($value, $key) use($lib, $group_name){
+						$lib->registerJs($group_name.'/'.$value,$lib->getOption('jsPosition'),$group_name);
+					});
+					break;
+				}
+			});
+		});
+		return $this;
 	}
 }
